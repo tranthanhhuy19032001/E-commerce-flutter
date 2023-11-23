@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
@@ -16,7 +17,8 @@ class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
-  String? conform_password;
+  String? confirmPassword;
+  String userId = '';
   bool remember = false;
   final List<String?> errors = [];
 
@@ -33,6 +35,25 @@ class _SignUpFormState extends State<SignUpForm> {
       setState(() {
         errors.remove(error);
       });
+    }
+  }
+
+  Future<void> createUserAccount(String email, String password) async {
+    try {
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      userId = credential.user!.uid;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -106,14 +127,14 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 20),
           TextFormField(
             obscureText: true,
-            onSaved: (newValue) => conform_password = newValue,
+            onSaved: (newValue) => confirmPassword = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
                 removeError(error: kPassNullError);
-              } else if (value.isNotEmpty && password == conform_password) {
+              } else if (value.isNotEmpty && password == confirmPassword) {
                 removeError(error: kMatchPassError);
               }
-              conform_password = value;
+              confirmPassword = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -137,11 +158,19 @@ class _SignUpFormState extends State<SignUpForm> {
           FormError(errors: errors),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
+                //save user to firebase
+                await createUserAccount(email!, password!);
                 // if all are valid then go to success screen
-                Navigator.pushNamed(context, CompleteProfileScreen.routeName);
+                Future.delayed(Duration.zero, () {
+                  Navigator.pushNamed(
+                    context,
+                    CompleteProfileScreen.routeName,
+                    arguments: {'userId': userId},
+                  );
+                });
               }
             },
             child: const Text("Continue"),

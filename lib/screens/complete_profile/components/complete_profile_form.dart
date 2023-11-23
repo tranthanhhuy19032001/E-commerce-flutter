@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';
-import '../../otp/otp_screen.dart';
+// import '../../otp/otp_screen.dart';
+import '../../sign_in/sign_in_screen.dart';
 
 class CompleteProfileForm extends StatefulWidget {
-  const CompleteProfileForm({super.key});
+  const CompleteProfileForm({super.key, required this.userId});
+
+  final String userId;
 
   @override
   _CompleteProfileFormState createState() => _CompleteProfileFormState();
@@ -36,6 +40,26 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     }
   }
 
+  // Register user with FirebaseAuth and save additional data to Firestore
+  void saveUserData(String firstName, String lastName, String phoneNumber,
+      String address) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      // Save additional user data to Firestore
+      await firestore.collection('users').doc(widget.userId).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'phoneNumber': phoneNumber,
+        'address': address,
+      });
+
+      print('User registered and data saved successfully!');
+    } catch (e) {
+      print('Error registering user: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -48,7 +72,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
               if (value.isNotEmpty) {
                 removeError(error: kNamelNullError);
               }
-              return;
+              firstName = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -69,6 +93,19 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           const SizedBox(height: 20),
           TextFormField(
             onSaved: (newValue) => lastName = newValue,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                removeError(error: kNamelNullError);
+              }
+              lastName = value;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kNamelNullError);
+                return "";
+              }
+              return null;
+            },
             decoration: const InputDecoration(
               labelText: "Last Name",
               hintText: "Enter your last name",
@@ -86,7 +123,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
               if (value.isNotEmpty) {
                 removeError(error: kPhoneNumberNullError);
               }
-              return;
+              phoneNumber = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -111,7 +148,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
               if (value.isNotEmpty) {
                 removeError(error: kAddressNullError);
               }
-              return;
+              address = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -135,7 +172,9 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                Navigator.pushNamed(context, OtpScreen.routeName);
+                saveUserData(firstName!, lastName!, phoneNumber!, address!);
+                // Navigator.pushNamed(context, OtpScreen.routeName);
+                Navigator.pushNamed(context, SignInScreen.routeName);
               }
             },
             child: const Text("Continue"),

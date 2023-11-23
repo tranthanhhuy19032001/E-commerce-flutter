@@ -1,3 +1,5 @@
+// import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
@@ -5,10 +7,13 @@ import 'components/complete_profile_form.dart';
 
 class CompleteProfileScreen extends StatelessWidget {
   static String routeName = "/complete_profile";
-
   const CompleteProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String userId = args['userId'];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up'),
@@ -28,7 +33,7 @@ class CompleteProfileScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  const CompleteProfileForm(),
+                  CompleteProfileForm(userId: userId),
                   const SizedBox(height: 30),
                   Text(
                     "By continuing your confirm that you agree \nwith our Term and Condition",

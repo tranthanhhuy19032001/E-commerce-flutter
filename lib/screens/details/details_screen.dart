@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/models/Cart.dart';
+import 'package:shop_app/models/CartModel.dart';
 import 'package:shop_app/screens/cart/cart_screen.dart';
 
 import '../../models/Product.dart';
@@ -18,6 +21,7 @@ class DetailsScreen extends StatelessWidget {
     final ProductDetailsArguments agrs =
         ModalRoute.of(context)!.settings.arguments as ProductDetailsArguments;
     final product = agrs.product;
+    final cartModel = Provider.of<CartModel>(context);
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -105,7 +109,12 @@ class DetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routeName);
+                final cart = Cart(product: product, numOfItem: 1);
+                cartModel.add(cart);
+                Navigator.pushNamed(
+                  context,
+                  CartScreen.routeName,
+                );
               },
               child: const Text("Add To Cart"),
             ),

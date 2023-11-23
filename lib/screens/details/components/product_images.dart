@@ -29,22 +29,25 @@ class _ProductImagesState extends State<ProductImages> {
           ),
         ),
         // SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ...List.generate(
-              widget.product.images.length,
-              (index) => SmallProductImage(
-                isSelected: index == selectedImage,
-                press: () {
-                  setState(() {
-                    selectedImage = index;
-                  });
-                },
-                image: widget.product.images[index],
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...List.generate(
+                widget.product.images.length,
+                (index) => SmallProductImage(
+                  isSelected: index == selectedImage,
+                  press: () {
+                    setState(() {
+                      selectedImage = index;
+                    });
+                  },
+                  image: widget.product.images[index],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         )
       ],
     );
