@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/Cart.dart';
 import 'package:shop_app/models/CartModel.dart';
 
 import '../../../constants.dart';
@@ -82,12 +83,21 @@ class CheckoutCard extends StatelessWidget {
                     ),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, PaymentScreen.routeName),
+                        onPressed: () => cart.demoCarts.isEmpty
+                            ? {}
+                            : {
+                                Navigator.pushNamed(
+                                  context,
+                                  PaymentScreen.routeName,
+                                  arguments: PaymentArguments(cart: cart),
+                                ),
+                              },
                         child: const Text(
                           "Check Out",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                       ),
                     ),
