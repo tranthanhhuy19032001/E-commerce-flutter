@@ -42,10 +42,13 @@ class _SignFormState extends State<SignForm> {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email!, password: password!);
+      final user = FirebaseAuth.instance.currentUser;
+      if (!user!.emailVerified) {
+        addError(error: "Your email has not been verified!");
+        return false;
+      }
       return true;
     } on FirebaseAuthException catch (e) {
-      print("11111111111111111111111111111111");
-      print(e.code);
       if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
         addError(error: "Email or password incorrect");
       }
@@ -96,7 +99,8 @@ class _SignFormState extends State<SignForm> {
             onChanged: (value) {
               if (value.isNotEmpty) {
                 removeError(error: kPassNullError);
-              } else if (value.length >= 8) {
+              }
+              if (value.length >= 8) {
                 removeError(error: kShortPassError);
               }
               password = value;

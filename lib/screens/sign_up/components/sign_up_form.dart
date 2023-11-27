@@ -4,7 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';
-import '../../complete_profile/complete_profile_screen.dart';
+// import '../../complete_profile/complete_profile_screen.dart';
+import '../../verify_email/VerifyEmailScreen.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -18,7 +19,6 @@ class _SignUpFormState extends State<SignUpForm> {
   String? email;
   String? password;
   String? confirmPassword;
-  String userId = '';
   bool remember = false;
   final List<String?> errors = [];
 
@@ -40,17 +40,17 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Future<void> createUserAccount(String email, String password) async {
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      userId = credential.user!.uid;
+      removeError(error: 'The password provided is too weak.');
+      removeError(error: 'The account already exists for that email.');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        addError(error: 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        addError(error: 'The account already exists for that email.');
       }
     } catch (e) {
       print(e);
@@ -69,10 +69,11 @@ class _SignUpFormState extends State<SignUpForm> {
             onChanged: (value) {
               if (value.isNotEmpty) {
                 removeError(error: kEmailNullError);
-              } else if (emailValidatorRegExp.hasMatch(value)) {
+              }
+              if (emailValidatorRegExp.hasMatch(value)) {
                 removeError(error: kInvalidEmailError);
               }
-              return;
+              email = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -100,8 +101,12 @@ class _SignUpFormState extends State<SignUpForm> {
             onChanged: (value) {
               if (value.isNotEmpty) {
                 removeError(error: kPassNullError);
-              } else if (value.length >= 8) {
+              }
+              if (value.length >= 8) {
                 removeError(error: kShortPassError);
+              }
+              if (value == confirmPassword) {
+                removeError(error: kMatchPassError);
               }
               password = value;
             },
@@ -131,7 +136,8 @@ class _SignUpFormState extends State<SignUpForm> {
             onChanged: (value) {
               if (value.isNotEmpty) {
                 removeError(error: kPassNullError);
-              } else if (value.isNotEmpty && password == confirmPassword) {
+              }
+              if (value.isNotEmpty && password == value) {
                 removeError(error: kMatchPassError);
               }
               confirmPassword = value;
@@ -164,13 +170,19 @@ class _SignUpFormState extends State<SignUpForm> {
                 //save user to firebase
                 await createUserAccount(email!, password!);
                 // if all are valid then go to success screen
-                Future.delayed(Duration.zero, () {
-                  Navigator.pushNamed(
-                    context,
-                    CompleteProfileScreen.routeName,
-                    arguments: {'userId': userId},
-                  );
-                });
+                Future.delayed(
+                    Duration.zero,
+                    () => errors.isEmpty
+                        ? {
+                            if (FirebaseAuth.instance.currentUser != null)
+                              {
+                                Navigator.pushNamed(
+                                  context,
+                                  VerifyEmailScreen.routeName,
+                                )
+                              }
+                          }
+                        : {});
               }
             },
             child: const Text("Continue"),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,9 +9,7 @@ import '../../../constants.dart';
 import '../../sign_in/sign_in_screen.dart';
 
 class CompleteProfileForm extends StatefulWidget {
-  const CompleteProfileForm({super.key, required this.userId});
-
-  final String userId;
+  const CompleteProfileForm({super.key});
 
   @override
   _CompleteProfileFormState createState() => _CompleteProfileFormState();
@@ -47,7 +46,10 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
     try {
       // Save additional user data to Firestore
-      await firestore.collection('users').doc(widget.userId).set({
+      await firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid.toString())
+          .set({
         'firstName': firstName,
         'lastName': lastName,
         'phoneNumber': phoneNumber,

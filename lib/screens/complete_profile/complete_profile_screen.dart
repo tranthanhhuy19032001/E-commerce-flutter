@@ -1,5 +1,6 @@
 // import 'dart:ffi';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
@@ -11,9 +12,6 @@ class CompleteProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    String userId = args['userId'];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up'),
@@ -33,7 +31,7 @@ class CompleteProfileScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  CompleteProfileForm(userId: userId),
+                  const CompleteProfileForm(),
                   const SizedBox(height: 30),
                   Text(
                     "By continuing your confirm that you agree \nwith our Term and Condition",
