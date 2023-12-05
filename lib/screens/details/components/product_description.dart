@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../constants.dart';
 import '../../../models/Product.dart';
 
-class ProductDescription extends StatelessWidget {
+class ProductDescription extends StatefulWidget {
   const ProductDescription({
     Key? key,
     required this.product,
@@ -15,6 +15,13 @@ class ProductDescription extends StatelessWidget {
   final GestureTapCallback? pressOnSeeMore;
 
   @override
+  _ProductDescriptionState createState() => _ProductDescriptionState();
+}
+
+class _ProductDescriptionState extends State<ProductDescription> {
+  bool isSeeMoreDetail = false;
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +29,7 @@ class ProductDescription extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            product.title,
+            widget.product.title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -32,7 +39,7 @@ class ProductDescription extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             width: 48,
             decoration: BoxDecoration(
-              color: product.isFavourite
+              color: widget.product.isFavourite
                   ? const Color(0xFFFFE6E6)
                   : const Color(0xFFF5F6F9),
               borderRadius: const BorderRadius.only(
@@ -43,10 +50,11 @@ class ProductDescription extends StatelessWidget {
             child: SvgPicture.asset(
               "assets/icons/Heart Icon_2.svg",
               colorFilter: ColorFilter.mode(
-                  product.isFavourite
-                      ? const Color(0xFFFF4848)
-                      : const Color(0xFFDBDEE4),
-                  BlendMode.srcIn),
+                widget.product.isFavourite
+                    ? const Color(0xFFFF4848)
+                    : const Color(0xFFDBDEE4),
+                BlendMode.srcIn,
+              ),
               height: 16,
             ),
           ),
@@ -57,8 +65,8 @@ class ProductDescription extends StatelessWidget {
             right: 64,
           ),
           child: Text(
-            product.description,
-            maxLines: 3,
+            widget.product.description,
+            maxLines: isSeeMoreDetail ? null : 3,
           ),
         ),
         Padding(
@@ -67,16 +75,30 @@ class ProductDescription extends StatelessWidget {
             vertical: 12,
           ),
           child: GestureDetector(
-            onTap: () {},
-            child: const Row(
+            onTap: () {
+              setState(() {
+                isSeeMoreDetail = !isSeeMoreDetail;
+              });
+            },
+            child: Row(
               children: [
-                Text(
-                  "See More Detail",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600, color: kPrimaryColor),
-                ),
-                SizedBox(width: 5),
-                Icon(
+                isSeeMoreDetail
+                    ? const Text(
+                        "See More Detail",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: kPrimaryColor,
+                        ),
+                      )
+                    : const Text(
+                        "See less Detail",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: kPrimaryColor,
+                        ),
+                      ),
+                const SizedBox(width: 5),
+                const Icon(
                   Icons.arrow_forward_ios,
                   size: 12,
                   color: kPrimaryColor,
@@ -84,7 +106,7 @@ class ProductDescription extends StatelessWidget {
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

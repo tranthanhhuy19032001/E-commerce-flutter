@@ -46,3 +46,6 @@ OutlineInputBorder outlineInputBorder() {
     borderSide: const BorderSide(color: kTextColor),
   );
 }
+
+const smartPhone = "Smart Phone";
+const fashion = "Fashion";

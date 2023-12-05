@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/helper/keyboard.dart';
 
 import '../../constants.dart';
 import '../sign_in/sign_in_screen.dart';
@@ -30,8 +31,15 @@ class _SplashScreenState extends State<SplashScreen> {
       "image": "assets/images/splash_3.png"
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    KeyboardUtil.hideKeyboard(context);
     return Scaffold(
       body: SafeArea(
         child: SizedBox(

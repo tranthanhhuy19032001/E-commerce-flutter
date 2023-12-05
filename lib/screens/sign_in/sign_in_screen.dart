@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../authentication.dart';
 import '../../components/no_account_text.dart';
 import '../../components/socal_card.dart';
+import '../init_screen.dart';
 import 'components/sign_form.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -43,7 +45,13 @@ class SignInScreen extends StatelessWidget {
                     children: [
                       SocalCard(
                         icon: "assets/icons/google-icon.svg",
-                        press: () {},
+                        press: () async {
+                          await Authentication.signInWithGoogle(
+                              context: context);
+                          Future.delayed(Duration.zero, () {
+                            Navigator.pushNamed(context, InitScreen.routeName);
+                          });
+                        },
                       ),
                       SocalCard(
                         icon: "assets/icons/facebook-2.svg",

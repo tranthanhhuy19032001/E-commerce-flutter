@@ -27,18 +27,18 @@ class PopularProducts extends StatelessWidget {
           child: Row(
             children: [
               ...List.generate(
-                demoProducts.length,
+                productList.length,
                 (index) {
-                  if (demoProducts[index].isPopular) {
+                  if (productList[index].isPopular) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: ProductCard(
-                        product: demoProducts[index],
+                        product: productList[index],
                         onPress: () => Navigator.pushNamed(
                           context,
                           DetailsScreen.routeName,
                           arguments: ProductDetailsArguments(
-                              product: demoProducts[index]),
+                              product: productList[index]),
                         ),
                       ),
                     );

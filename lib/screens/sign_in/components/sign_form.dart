@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
@@ -20,6 +21,8 @@ class _SignFormState extends State<SignForm> {
   String? email;
   String? password;
   bool? remember = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final List<String?> errors = [];
 
   void addError({String? error}) {
@@ -38,7 +41,7 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
-  Future<bool> signIn() async {
+  Future<bool> signInWithEmailAndPassword() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email!, password: password!);
@@ -56,6 +59,44 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  //handle remember me function
+  void _handleRemeberme(bool value) {
+    SharedPreferences.getInstance().then(
+      (prefs) {
+        prefs.setBool("remember_me", value);
+        prefs.setString('email', email!);
+        prefs.setString('password', password!);
+      },
+    );
+    setState(() {
+      remember = value;
+    });
+  }
+
+  //load email and password
+  void _loadUserEmailPassword() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      email = prefs.getString("email") ?? "";
+      password = prefs.getString("password") ?? "";
+      setState(() {
+        remember = prefs.getBool("remember_me") ?? false;
+      });
+      if (remember!) {
+        _emailController.text = email ?? "";
+        _passwordController.text = password ?? "";
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    _loadUserEmailPassword();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -63,6 +104,7 @@ class _SignFormState extends State<SignForm> {
       child: Column(
         children: [
           TextFormField(
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             onSaved: (newValue) => email = newValue,
             onChanged: (value) {
@@ -94,6 +136,7 @@ class _SignFormState extends State<SignForm> {
           ),
           const SizedBox(height: 20),
           TextFormField(
+            controller: _passwordController,
             obscureText: true,
             onSaved: (newValue) => password = newValue,
             onChanged: (value) {
@@ -131,9 +174,7 @@ class _SignFormState extends State<SignForm> {
                 value: remember,
                 activeColor: kPrimaryColor,
                 onChanged: (value) {
-                  setState(() {
-                    remember = value;
-                  });
+                  _handleRemeberme(value!);
                 },
               ),
               const Text("Remember me"),
@@ -157,7 +198,7 @@ class _SignFormState extends State<SignForm> {
                 KeyboardUtil.hideKeyboard(context);
                 // if all are valid then go to success screen
 
-                bool isSignInSuccess = await signIn();
+                bool isSignInSuccess = await signInWithEmailAndPassword();
                 isSignInSuccess
                     ? Future.delayed(Duration.zero, () {
                         Navigator.pushNamed(context, InitScreen.routeName);

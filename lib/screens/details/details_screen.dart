@@ -78,7 +78,8 @@ class DetailsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: SingleChildScrollView(
+          child: Column(
         children: [
           ProductImages(product: product),
           TopRoundedContainer(
@@ -93,7 +94,9 @@ class DetailsScreen extends StatelessWidget {
                   color: const Color(0xFFF6F7F9),
                   child: Column(
                     children: [
-                      ColorDots(product: product),
+                      ColorDots(
+                        product: product,
+                      ),
                     ],
                   ),
                 ),
@@ -101,7 +104,7 @@ class DetailsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
       bottomNavigationBar: TopRoundedContainer(
         color: Colors.white,
         child: SafeArea(

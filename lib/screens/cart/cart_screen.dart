@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/CartModel.dart';
 
-import '../../models/Cart.dart';
 import 'components/cart_card.dart';
 import 'components/check_out_card.dart';
 
@@ -19,11 +18,6 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
-    // final CartArguments agrs =
-    //     ModalRoute.of(context)!.settings.arguments as CartArguments;
-    // Product product = agrs.product;
-    // final cart = Cart(product: product, numOfItem: 1);
-    // cart.add(cart);
     return Consumer<CartModel>(
       builder: (context, cart, child) {
         return Scaffold(
