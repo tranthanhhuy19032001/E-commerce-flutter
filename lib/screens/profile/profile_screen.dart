@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../authentication.dart';
+import '../add_product/add_product_screen.dart';
 import 'components/profile_menu.dart';
 import 'components/profile_pic.dart';
 import '../sign_in/sign_in_screen.dart';
@@ -11,8 +12,6 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    // Accessing the currently authenticated user
-    User? user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
@@ -27,6 +26,12 @@ class ProfileScreen extends StatelessWidget {
               text: "My Account",
               icon: "assets/icons/User Icon.svg",
               press: () => {},
+            ),
+            ProfileMenu(
+              text: "Add product",
+              icon: "assets/icons/Add Icon.svg",
+              press: () =>
+                  {Navigator.pushNamed(context, AddProductScreen.routeName)},
             ),
             ProfileMenu(
               text: "Notifications",
@@ -47,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
               text: "Log Out",
               icon: "assets/icons/Log out.svg",
               press: () async {
-                await FirebaseAuth.instance.signOut();
+                await Authentication.signOut(context: context);
                 Future.delayed(Duration.zero, () {
                   Navigator.pushNamed(context, SignInScreen.routeName);
                 });
